@@ -49,7 +49,10 @@
                         </div>
                         <div>
                             <span class="badge bg-warning text-dark me-3" ng-if="mod.status === 'pending'">Pending</span>
-                            <a href="#!{{ mod.path }}" class="btn btn-sm btn-primary-cyber">Execute</a>
+                            <span class="badge bg-success text-white me-3" ng-if="mod.status === 'completed'"><i class="bi bi-check-lg"></i> Completed</span>
+                            <a href="#!{{ mod.path }}" class="btn btn-sm" ng-class="mod.status === 'completed' ? 'btn-secondary-cyber' : 'btn-primary-cyber'">
+                                {{ mod.status === 'completed' ? 'Review' : 'Execute' }}
+                            </a>
                         </div>
                     </div>
                 </div>

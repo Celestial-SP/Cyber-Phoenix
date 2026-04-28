@@ -175,28 +175,31 @@ app.service('AuthService', ['$q', '$rootScope', function($q, $rootScope) {
     this.getUserData = function() { return userData; };
     
     this.addScore = function(points, moduleName) {
-        if (!currentUser) return;
+        if (!currentUser || !userData) return;
         
+        // Ensure all required fields exist
         if (!userData.completedModules) userData.completedModules = {};
-        userData.completedModules[moduleName] = true;
-
-        var newScore = (userData.score || 0) + points;
-        var newLevel = Math.floor(newScore / 500) + 1;
+        if (userData.completedModules[moduleName]) {
+            // Already completed, just update score if needed
+            // return $q.when(); 
+        }
         
-        var updates = {
-            score: newScore,
-            level: newLevel
-        };
-        updates[`completedModules.${moduleName}`] = true;
+        userData.completedModules[moduleName] = true;
+        userData.score = (userData.score || 0) + points;
+        userData.level = Math.floor(userData.score / 500) + 1;
 
         var completedCount = Object.keys(userData.completedModules).length;
         var totalModules = 3; 
-        updates.progress = Math.round((completedCount / totalModules) * 100);
+        userData.progress = Math.round((completedCount / totalModules) * 100);
+
+        var updates = {
+            score: userData.score,
+            level: userData.level,
+            progress: userData.progress
+        };
+        updates[`completedModules.${moduleName}`] = true;
 
         return db.collection('users').doc(currentUser.uid).update(updates).then(function() {
-            userData.score = newScore;
-            userData.level = newLevel;
-            userData.progress = updates.progress;
             $rootScope.$applyAsync();
         });
     };
