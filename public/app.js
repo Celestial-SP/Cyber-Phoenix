@@ -424,25 +424,53 @@ app.controller('RewardsCtrl', ['$scope', function($scope) {
     $scope.loading = true;
     $scope.error = null;
 
-    db.collection('users').orderBy('score', 'desc').limit(10).get().then(function(snapshot) {
-        var lb = [];
-        var rank = 1;
-        snapshot.forEach(function(doc) {
-            var data = doc.data();
-            lb.push({ 
-                rank: rank++, 
-                name: data.username || data.name || 'Anonymous Agent', 
-                score: data.score || 0 
+    // Real-time listener for the leaderboard
+    var unsubscribe = db.collection('users')
+        .orderBy('score', 'desc')
+        .limit(10)
+        .onSnapshot(function(snapshot) {
+            var lb = [];
+            var rank = 1;
+            snapshot.forEach(function(doc) {
+                var data = doc.data();
+                lb.push({ 
+                    rank: rank++, 
+                    name: data.username || data.name || data.email || 'Anonymous Agent', 
+                    score: data.score || 0,
+                    uid: doc.id
+                });
+            });
+            
+            $scope.$apply(function() {
+                $scope.leaderboard = lb;
+                $scope.loading = false;
+                
+                // Find current user in the leaderboard or show their own data
+                var myData = AuthService.getUserData();
+                if (myData) {
+                    $scope.myRank = "N/A";
+                    $scope.myScore = myData.score || 0;
+                    // Note: In a real app, you'd query for rank if not in top 10
+                    // For now, we check if they are in the loaded top 10
+                    for (var i=0; i < lb.length; i++) {
+                        if (lb[i].uid === AuthService.getUid()) {
+                            $scope.myRank = lb[i].rank;
+                            break;
+                        }
+                    }
+                }
+            });
+        }, function(err) {
+            console.error("Leaderboard Error:", err);
+            $scope.$apply(function() {
+                $scope.error = "Unable to retrieve roster. Check console for details.";
+                $scope.loading = false;
             });
         });
-        $scope.leaderboard = lb;
-        $scope.loading = false;
-        $scope.$applyAsync();
-    }).catch(function(err) {
-        console.error("Leaderboard Error:", err);
-        $scope.error = "Unable to retrieve roster. Check console for details.";
-        $scope.loading = false;
-        $scope.$applyAsync();
+
+    // Cleanup listener when scope is destroyed
+    $scope.$on('$destroy', function() {
+        if (unsubscribe) unsubscribe();
     });
 }]);
 
