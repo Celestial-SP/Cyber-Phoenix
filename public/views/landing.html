@@ -1,0 +1,90 @@
+<div class="container mt-5 pt-3">
+    <!-- Hero Section -->
+    <div class="row align-items-center mb-5 pb-5">
+        <div class="col-lg-6 mb-5 mb-lg-0">
+            <div class="pe-lg-5">
+                <span class="badge bg-secondary text-primary text-uppercase tracking-wide mb-3 px-3 py-2 rounded-pill"><i class="bi bi-shield-check me-2"></i> Next-Gen Security Training</span>
+                <h1 class="font-display display-4 fw-bold text-white mb-4">Master The Art of <span class="text-primary">Cyber Defense</span></h1>
+                <p class="text-on-surface-variant fs-5 mb-5">Welcome to the Cyber-Phoenix Training Platform. A high-fidelity, interactive environment designed to elevate your security awareness and protect critical infrastructure from modern threats.</p>
+                <div class="d-flex gap-3">
+                    <a href="#login-section" class="btn btn-primary-cyber btn-lg text-decoration-none">Start Training</a>
+                    <a href="#features-section" class="btn btn-secondary-cyber btn-lg text-decoration-none">View Modules</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Login/Signup Card -->
+        <div class="col-lg-6" id="login-section">
+            <div class="cyber-card">
+                <div class="text-center mb-4">
+                    <i class="bi bi-fingerprint text-tertiary" style="font-size: 3.5rem;"></i>
+                    <h3 class="font-display mt-3">{{ isSignUp ? 'Enlist New Agent' : 'Secure Uplink' }}</h3>
+                    <p class="text-on-surface-variant small">{{ isSignUp ? 'Create your access credentials' : 'Authenticate to access your training modules' }}</p>
+                </div>
+                
+                <form ng-submit="submitAuth()">
+                    <div class="mb-4 text-start">
+                        <label class="form-label text-on-surface-variant text-uppercase tracking-wide small fw-bold">Email Address</label>
+                        <input type="email" class="form-control form-control-cyber" ng-model="email" required placeholder="Enter your email">
+                    </div>
+                    
+                    <div class="mb-4 text-start" ng-if="isSignUp">
+                        <label class="form-label text-on-surface-variant text-uppercase tracking-wide small fw-bold">Agent Handle (Username)</label>
+                        <input type="text" class="form-control form-control-cyber" ng-model="username" ng-required="isSignUp" placeholder="Choose a username">
+                    </div>
+                    
+                    <div class="mb-4 text-start">
+                        <label class="form-label text-on-surface-variant text-uppercase tracking-wide small fw-bold">Access Code (Password)</label>
+                        <input type="password" class="form-control form-control-cyber" ng-model="password" required placeholder="Enter your password">
+                    </div>
+                    
+                    <div class="alert alert-danger" ng-if="error">
+                        {{ error }}
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary-cyber btn-lg">{{ isSignUp ? 'INITIALIZE REGISTRATION' : 'ESTABLISH UPLINK' }}</button>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <a href="" ng-click="toggleMode()" class="text-tertiary text-decoration-none small">
+                            {{ isSignUp ? 'Already have access? Establish Uplink here.' : 'Need access? Enlist as a new agent.' }}
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row pt-5 mt-5 border-top border-secondary" id="features-section">
+        <div class="col-12 text-center mb-5">
+            <h2 class="font-display text-white">Simulation Capabilities</h2>
+            <p class="text-on-surface-variant">Engage with dynamic, real-world cyber threats in a controlled environment.</p>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="surface-container-high h-100 text-center p-4">
+                <i class="bi bi-envelope-exclamation text-primary mb-3 d-block" style="font-size: 3rem;"></i>
+                <h4 class="font-display text-white">Phishing Detection</h4>
+                <p class="text-on-surface-variant">Learn to identify malicious links, spoofed addresses, and social engineering tactics in a realistic email inbox simulator.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="surface-container-high h-100 text-center p-4">
+                <i class="bi bi-key-fill text-tertiary mb-3 d-block" style="font-size: 3rem;"></i>
+                <h4 class="font-display text-white">Password Entropy</h4>
+                <p class="text-on-surface-variant">Master the creation of highly resilient access keys using our real-time entropy analyzer and structural integrity checker.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="surface-container-high h-100 text-center p-4">
+                <i class="bi bi-question-square text-secondary mb-3 d-block" style="font-size: 3rem;"></i>
+                <h4 class="font-display text-white">Scenario Quizzes</h4>
+                <p class="text-on-surface-variant">Test your reflexes against social engineering attempts, physical security breaches, and incident response protocols.</p>
+            </div>
+        </div>
+    </div>
+</div>

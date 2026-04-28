@@ -1,0 +1,59 @@
+<div class="container mt-5">
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="font-display">Agent Protocol: Active</h2>
+            <p class="text-on-surface-variant">Welcome back. Your training modules are ready for execution.</p>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-4 mb-4">
+            <div class="surface-container-high h-100">
+                <h6 class="text-on-surface-variant text-uppercase tracking-wide mb-3">Overall Progress</h6>
+                <h2 class="text-primary font-display mb-3">{{ progress }}%</h2>
+                <div class="progress progress-cyber">
+                    <div class="progress-bar progress-bar-cyber" role="progressbar" style="width: {{progress}}%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="surface-container-high h-100">
+                <h6 class="text-on-surface-variant text-uppercase tracking-wide mb-3">Security Clearance</h6>
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-shield-check text-tertiary me-3" style="font-size: 3rem;"></i>
+                    <div>
+                        <h2 class="font-display mb-0">Level {{ level }}</h2>
+                        <span class="text-success-cyber">Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="surface-container-high h-100">
+                <h6 class="text-on-surface-variant text-uppercase tracking-wide mb-3">Pending Action</h6>
+                <p class="mb-3">Complete all remaining modules to achieve Level {{level + 1}} clearance.</p>
+                <a href="#!/sim-phishing" class="btn btn-secondary-cyber">Continue Training</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="surface-container-low">
+                <h4 class="font-display mb-4">Training Modules</h4>
+                <div class="list-group">
+                    <div ng-repeat="mod in modules" class="list-group-item bg-transparent border-0 d-flex justify-content-between align-items-center p-3 mb-2" style="background: var(--surface-container-highest) !important; border-radius: 0.5rem;">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-play-circle text-primary me-3 fs-4"></i>
+                            <h5 class="mb-0">{{ mod.title }}</h5>
+                        </div>
+                        <div>
+                            <span class="badge bg-warning text-dark me-3" ng-if="mod.status === 'pending'">Pending</span>
+                            <a href="#!{{ mod.path }}" class="btn btn-sm btn-primary-cyber">Execute</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

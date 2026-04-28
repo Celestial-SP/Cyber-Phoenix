@@ -1,0 +1,27 @@
+<div class="container mt-5">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="font-display">Global Roster</h1>
+            <p class="text-on-surface-variant">Top performing agents across all sectors.</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="surface-container-high p-4">
+                <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-3" ng-repeat="user in leaderboard">
+                    <div class="d-flex align-items-center">
+                        <div class="me-4 position-relative">
+                            <i class="bi bi-hexagon-fill fs-1" ng-class="{'text-warning': user.rank === 1, 'text-secondary': user.rank === 2, 'text-danger': user.rank === 3, 'text-primary': user.rank > 3}"></i>
+                            <span class="position-absolute top-50 start-50 translate-middle text-dark fw-bold">{{ user.rank }}</span>
+                        </div>
+                        <h4 class="mb-0 font-display">{{ user.name }}</h4>
+                    </div>
+                    <div>
+                        <span class="fs-4 fw-bold text-tertiary">{{ user.score }} pts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

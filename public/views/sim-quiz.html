@@ -1,0 +1,34 @@
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="font-display"><i class="bi bi-question-square text-primary me-2"></i> Scenario Quiz</h2>
+            <p class="text-on-surface-variant">Analyze the situation and select the most secure response.</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="surface-container-high position-relative">
+                <span class="badge bg-primary position-absolute top-0 end-0 m-3">Question {{ currentQ + 1 }} of {{ questions.length }}</span>
+                <h3 class="mb-4">{{ questions[currentQ].text }}</h3>
+                
+                <div class="d-grid gap-3">
+                    <button class="btn btn-secondary-cyber text-start p-3 fs-5" 
+                            ng-repeat="opt in questions[currentQ].options" 
+                            ng-click="selectOption($index)">
+                        <i class="bi bi-arrow-right-circle text-primary me-2"></i> {{ opt }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="feedback-overlay" ng-class="{'show': showFeedback}">
+    <div class="feedback-content text-center">
+        <i class="bi" ng-class="isCorrect ? 'bi-check-circle-fill text-success-cyber' : 'bi-x-circle-fill text-danger-cyber'" style="font-size: 5rem;"></i>
+        <h3 class="font-display mt-3 mb-3">{{ isCorrect ? 'Optimal Response' : 'Sub-Optimal Choice' }}</h3>
+        <p class="mb-4">{{ feedbackMessage }}</p>
+        <button class="btn btn-primary-cyber" ng-click="showFeedback = false">Next Scenario</button>
+    </div>
+</div>

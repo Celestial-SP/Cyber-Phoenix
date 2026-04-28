@@ -1,0 +1,59 @@
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <div>
+                <a href="#!/admin" class="text-secondary text-decoration-none mb-2 d-inline-block"><i class="bi bi-arrow-left"></i> Back to Command Center</a>
+                <h2 class="font-display">Scenario Management</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="surface-container-high h-100">
+                <h4 class="font-display mb-4">Deploy New Scenario</h4>
+                <form ng-submit="addScenario()">
+                    <div class="mb-3">
+                        <label class="form-label text-on-surface-variant">Scenario Title</label>
+                        <input type="text" class="form-control form-control-cyber" ng-model="newScenario.title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-on-surface-variant">Type</label>
+                        <select class="form-select form-control-cyber" ng-model="newScenario.type">
+                            <option value="phishing">Phishing</option>
+                            <option value="password">Password</option>
+                            <option value="quiz">Quiz</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-on-surface-variant">Difficulty</label>
+                        <select class="form-select form-control-cyber" ng-model="newScenario.difficulty">
+                            <option value="Easy">Easy</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary-cyber w-100"><i class="bi bi-plus-circle me-2"></i> Create Scenario</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-8 mb-4">
+            <div class="surface-container-high h-100">
+                <h4 class="font-display mb-4">Active Deployments</h4>
+                <div class="list-group">
+                    <div ng-repeat="scenario in scenarios" class="list-group-item bg-transparent border-bottom border-secondary p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1 fw-bold">{{ scenario.title }}</h5>
+                                <span class="badge bg-secondary me-2">{{ scenario.type | uppercase }}</span>
+                                <span class="badge" ng-class="{'bg-success': scenario.difficulty === 'Easy', 'bg-warning text-dark': scenario.difficulty === 'Medium', 'bg-danger': scenario.difficulty === 'Hard'}">{{ scenario.difficulty }}</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i> Edit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

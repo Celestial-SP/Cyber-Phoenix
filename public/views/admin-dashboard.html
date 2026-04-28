@@ -1,0 +1,53 @@
+<div class="container mt-5">
+    <div class="row mb-5">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="font-display text-primary">Command Center Overview</h2>
+                <p class="text-on-surface-variant">System status and user metrics.</p>
+            </div>
+            <div>
+                <a href="#!/admin-users" class="btn btn-secondary-cyber me-2">Manage Agents</a>
+                <a href="#!/admin-scenarios" class="btn btn-primary-cyber">Manage Scenarios</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="surface-container-high text-center">
+                <i class="bi bi-people text-secondary" style="font-size: 2.5rem;"></i>
+                <h1 class="font-display mt-3">{{ stats.totalUsers }}</h1>
+                <p class="text-on-surface-variant text-uppercase tracking-wide">Total Active Agents</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="surface-container-high text-center">
+                <i class="bi bi-graph-up text-tertiary" style="font-size: 2.5rem;"></i>
+                <h1 class="font-display mt-3">{{ stats.avgScore }}</h1>
+                <p class="text-on-surface-variant text-uppercase tracking-wide">Average Score</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="surface-container-high text-center">
+                <i class="bi bi-activity text-primary" style="font-size: 2.5rem;"></i>
+                <h1 class="font-display mt-3">{{ stats.activeSimulations }}</h1>
+                <p class="text-on-surface-variant text-uppercase tracking-wide">Active Simulations</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="surface-container-low">
+                <h4 class="font-display mb-4">System Alerts</h4>
+                <div class="alert alert-warning bg-transparent border border-warning text-warning d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
+                    <div>
+                        <strong>Low Engagement:</strong> 12 users have not completed the latest Phishing Simulation. 
+                        <a href="#!/admin-users" class="alert-link text-decoration-underline ms-2">View Users</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

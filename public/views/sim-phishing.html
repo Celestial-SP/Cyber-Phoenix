@@ -1,0 +1,42 @@
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="font-display"><i class="bi bi-envelope-exclamation text-primary me-2"></i> Module: Phishing Detection</h2>
+            <p class="text-on-surface-variant">Identify the threat. Click on any links you suspect are malicious.</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="phishing-email shadow-lg position-relative">
+                <span class="badge bg-primary position-absolute top-0 end-0 m-3">Email {{ currentEmail + 1 }} of {{ emails.length }}</span>
+                <div class="border-bottom pb-3 mb-3">
+                    <strong>From:</strong> {{ emails[currentEmail].from }}<br>
+                    <strong>Subject:</strong> {{ emails[currentEmail].subject }}<br>
+                    <strong>Date:</strong> {{ emails[currentEmail].date }}
+                </div>
+                <div class="email-body">
+                    <p ng-repeat="paragraph in emails[currentEmail].body">{{ paragraph }}</p>
+                    
+                    <div class="text-center my-4 d-grid gap-2">
+                        <button class="btn btn-outline-primary fw-bold" 
+                              ng-repeat="link in emails[currentEmail].links"
+                              ng-click="checkLink(link.isPhishing)" 
+                              title="{{ link.url }}">
+                            {{ link.text }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="feedback-overlay" ng-class="{'show': showFeedback}">
+    <div class="feedback-content text-center">
+        <i class="bi" ng-class="isCorrect ? 'bi-check-circle-fill text-success-cyber' : 'bi-x-circle-fill text-danger-cyber'" style="font-size: 5rem;"></i>
+        <h3 class="font-display mt-3 mb-3">{{ isCorrect ? 'Threat Neutralized' : 'System Compromised' }}</h3>
+        <p class="mb-4">{{ feedbackMessage }}</p>
+        <button class="btn btn-primary-cyber" ng-click="showFeedback = false">Continue</button>
+    </div>
+</div>
