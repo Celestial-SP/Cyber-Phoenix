@@ -8,6 +8,8 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+// Fix for 'client is offline' issues in some environments
+db.settings({ experimentalForceLongPolling: true });
 const auth = firebase.auth();
 
 var app = angular.module('cyberPhoenixApp', ['ngRoute', 'ngAnimate']);
