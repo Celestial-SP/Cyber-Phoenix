@@ -174,11 +174,9 @@ app.service('AuthService', ['$q', '$rootScope', function($q, $rootScope) {
     this.getUid = function() { return currentUser ? currentUser.uid : null; };
     this.getUserData = function() { return userData; };
     
-    // Helper to update score in firestore
     this.addScore = function(points, moduleName) {
         if (!currentUser) return;
         
-        // Ensure completedModules object exists
         if (!userData.completedModules) userData.completedModules = {};
         userData.completedModules[moduleName] = true;
 
@@ -191,7 +189,6 @@ app.service('AuthService', ['$q', '$rootScope', function($q, $rootScope) {
         };
         updates[`completedModules.${moduleName}`] = true;
 
-        // Recalculate progress based on actual module names
         var completedCount = Object.keys(userData.completedModules).length;
         var totalModules = 3; 
         updates.progress = Math.round((completedCount / totalModules) * 100);
@@ -262,6 +259,7 @@ app.controller('DashboardCtrl', ['$scope', 'AuthService', function($scope, AuthS
         var uData = AuthService.getUserData() || {};
         $scope.progress = uData.progress || 0;
         $scope.level = uData.level || 1;
+        $scope.score = uData.score || 0;
         var completed = uData.completedModules || {};
 
         $scope.modules = [
@@ -271,24 +269,17 @@ app.controller('DashboardCtrl', ['$scope', 'AuthService', function($scope, AuthS
         ];
     };
 
-    // Initialize
     updateView();
-
-    // Re-sync if data changes
     $scope.$watch(function() { return AuthService.getUserData(); }, updateView, true);
 }]);
 
-app.controller('SimPhishingCtrl', ['$scope', '$timeout', 'AuthService', function($scope, $timeout, AuthService) {
+app.controller('SimPhishingCtrl', ['$scope', '$timeout', 'AuthService', '$location', function($scope, $timeout, AuthService, $location) {
     $scope.emails = [
         {
             from: 'IT Support <admin@cyber-phoenlx.com>',
             subject: 'URGENT: Password Expiry Notification',
             date: 'Today, 09:42 AM',
-            body: [
-                'Dear User,',
-                'Your network password is set to expire in 2 hours. To maintain access to your systems, you must update your password immediately.',
-                'Please click the secure link below to update your credentials:'
-            ],
+            body: ['Your network password is set to expire in 2 hours. Please click the secure link below to update your credentials:'],
             links: [
                 { text: 'https://secure.cyber-phoenix.com/update-password', url: 'http://login-update-security-check.com/auth', isPhishing: true },
                 { text: 'helpdesk', url: 'mailto:support@cyber-phoenix.com', isPhishing: false }
@@ -298,36 +289,16 @@ app.controller('SimPhishingCtrl', ['$scope', '$timeout', 'AuthService', function
             from: 'HR Department <hr@cyber-phoenix-portal.com>',
             subject: 'Action Required: Updated Employee Handbook',
             date: 'Yesterday, 14:30 PM',
-            body: [
-                'Hello Team,',
-                'We have updated our employee handbook with new policies regarding remote work.',
-                'Please review the attached document and confirm your acknowledgement by clicking the link below:'
-            ],
+            body: ['We have updated our employee handbook with new policies regarding remote work. Please review and confirm acknowledgment.'],
             links: [
                 { text: 'Review Employee Handbook', url: 'http://cyber-phoenix-hr-portal-login.net/docs', isPhishing: true }
-            ]
-        },
-        {
-            from: 'CEO <ceo@cyber-phoenix.com>',
-            subject: 'Confidential: Wire Transfer Request',
-            date: 'Today, 11:15 AM',
-            body: [
-                'Hi,',
-                'I need you to process an urgent wire transfer for a new vendor acquisition.',
-                'Please click the link to see the invoice details and process it immediately.'
-            ],
-            links: [
-                { text: 'View Invoice', url: 'http://secure-invoice-viewer.com/transfer/8923', isPhishing: true }
             ]
         },
         {
             from: 'Microsoft 365 <no-reply@microsoft365-alert.com>',
             subject: 'Unusual sign-in activity',
             date: 'Today, 03:22 AM',
-            body: [
-                'We detected something unusual about a recent sign-in to your Microsoft account.',
-                'If this was you, you can ignore this email. If this wasn\'t you, please secure your account.'
-            ],
+            body: ['We detected something unusual about a recent sign-in to your Microsoft account. If this wasn\'t you, please secure your account.'],
             links: [
                 { text: 'Review recent activity', url: 'http://microsoft-secure-login-update.com/alert', isPhishing: true }
             ]
@@ -336,74 +307,9 @@ app.controller('SimPhishingCtrl', ['$scope', '$timeout', 'AuthService', function
             from: 'Internal IT <support@cyber-phoenix.com>',
             subject: 'Scheduled Maintenance Notice',
             date: '2 Days Ago',
-            body: [
-                'All Staff,',
-                'We will be conducting scheduled server maintenance this weekend. Expect intermittent downtime.',
-                'For more details, please visit our internal wiki page:'
-            ],
+            body: ['All Staff, server maintenance this weekend. Expect intermittent downtime. For more details, visit our wiki:'],
             links: [
                 { text: 'Maintenance Schedule', url: 'https://wiki.cyber-phoenix.com/maintenance', isPhishing: false }
-            ]
-        },
-        {
-            from: 'LinkedIn <messages-noreply@linkedin.com>',
-            subject: 'You appeared in 15 searches this week',
-            date: 'Today, 08:00 AM',
-            body: [
-                'Hi there,',
-                'See who is looking at your profile. Click below to view your search stats.'
-            ],
-            links: [
-                { text: 'View your search stats', url: 'http://linkeclln.com/stats', isPhishing: true }
-            ]
-        },
-        {
-            from: 'Payroll Services <payroll@cyber-phoenix.com>',
-            subject: 'Update to your direct deposit',
-            date: 'Today, 10:05 AM',
-            body: [
-                'We received a request to update your direct deposit information.',
-                'If you did not make this request, please cancel the update immediately using the link below.'
-            ],
-            links: [
-                { text: 'Cancel Request', url: 'http://payroll-update-cyber-phoenix.com/cancel', isPhishing: true }
-            ]
-        },
-        {
-            from: 'Amazon <order-update@amazon-service.com>',
-            subject: 'Your order has been shipped',
-            date: 'Yesterday, 18:45 PM',
-            body: [
-                'Hello,',
-                'Your recent order has been shipped and is on its way. Track your package below.'
-            ],
-            links: [
-                { text: 'Track Package', url: 'http://amazon-tracking-update-delivery.com/track', isPhishing: true }
-            ]
-        },
-        {
-            from: 'Security Team <security@cyber-phoenix.com>',
-            subject: 'Security Awareness Training Complete',
-            date: '1 Week Ago',
-            body: [
-                'Congratulations!',
-                'You have successfully completed the mandatory security awareness training for this quarter.',
-                'You can download your certificate here:'
-            ],
-            links: [
-                { text: 'Download Certificate', url: 'https://learning.cyber-phoenix.com/certificate/12345', isPhishing: false }
-            ]
-        },
-        {
-            from: 'Google Workspace <admin-alert@g-workspace-update.com>',
-            subject: 'Storage quota exceeded',
-            date: 'Today, 01:10 PM',
-            body: [
-                'Your Google Workspace account has exceeded its storage limit. You will not be able to receive new emails.',
-                'Click here to upgrade your storage plan immediately.'
-            ],
-            links: [
-                { text: 'Upgrade Storage', url: 'http://g-workspace-upgrade-storage.net/login', isPhishing: true }
             ]
         }
     ];
@@ -412,30 +318,35 @@ app.controller('SimPhishingCtrl', ['$scope', '$timeout', 'AuthService', function
     $scope.showFeedback = false;
     $scope.isCorrect = false;
     $scope.feedbackMessage = '';
+    $scope.isComplete = false;
     var feedbackTimeout = null;
 
     $scope.nextEmail = function() {
         if (feedbackTimeout) $timeout.cancel(feedbackTimeout);
         $scope.showFeedback = false;
+        
         if ($scope.currentEmail < $scope.emails.length - 1) {
             $scope.currentEmail++;
         } else {
-            $scope.currentEmail = 0;
+            $scope.isComplete = true;
+            AuthService.addScore(50, 'phishing');
         }
     };
 
     $scope.checkLink = function(isPhishing) {
         if (isPhishing) {
             $scope.isCorrect = true;
-            $scope.feedbackMessage = 'Excellent! You successfully identified the phishing link. Hovering over links to check the real URL is a crucial defense.';
-            AuthService.addScore(50, 'phishing');
+            $scope.feedbackMessage = 'Correct! That was a phishing attempt.';
         } else {
             $scope.isCorrect = false;
-            $scope.feedbackMessage = 'Incorrect. That was a legitimate link. Make sure to check the sender and URL carefully.';
+            $scope.feedbackMessage = 'Be careful! That was a legitimate link, but you should always verify the source.';
         }
         $scope.showFeedback = true;
-        
         feedbackTimeout = $timeout($scope.nextEmail, 4000);
+    };
+
+    $scope.goHome = function() {
+        $location.path('/dashboard');
     };
 }]);
 
@@ -468,45 +379,40 @@ app.controller('SimPasswordCtrl', ['$scope', 'AuthService', '$timeout', function
     };
 }]);
 
-app.controller('SimQuizCtrl', ['$scope', '$timeout', 'AuthService', function($scope, $timeout, AuthService) {
+app.controller('SimQuizCtrl', ['$scope', '$timeout', 'AuthService', '$location', function($scope, $timeout, AuthService, $location) {
     $scope.questions = [
-        { text: 'A colleague asks for your password to check an urgent file while they are traveling. What should you do?', options: ['Give it to them temporarily', 'Refuse and report the request', 'Create a guest account for them', 'Change your password immediately after'], answer: 1 },
-        { text: 'You receive an email from the "CEO" asking you to urgently purchase gift cards for a client. What is the best action?', options: ['Purchase them immediately to impress the CEO', 'Reply to the email asking for clarification', 'Call the CEO or talk to them in person to verify', 'Forward the email to all employees'], answer: 2 },
-        { text: 'Someone calls claiming to be from IT and asks you to install a software update via a link they send. What should you do?', options: ['Install the software', 'Ask for their employee ID', 'Hang up and report the call to the actual IT department', 'Tell them you will do it later'], answer: 2 },
-        { text: 'You find a USB drive in the company parking lot. What is the safest course of action?', options: ['Plug it into your computer to see who it belongs to', 'Plug it into a colleague\'s computer', 'Throw it in the trash', 'Turn it in to the IT or Security department immediately'], answer: 3 },
-        { text: 'A vendor emails you an invoice, but the bank account details have changed. What should you do?', options: ['Update the details and pay the invoice', 'Call the vendor using a known, trusted phone number to verify', 'Email the vendor back to confirm the new details', 'Ignore the invoice'], answer: 1 },
-        { text: 'You are working at a coffee shop and need to access the company network. What is the most secure method?', options: ['Use the coffee shop\'s public Wi-Fi directly', 'Use your personal mobile hotspot', 'Use the public Wi-Fi but connect via the company VPN', 'Don\'t work from a coffee shop'], answer: 2 },
-        { text: 'A pop-up appears on your screen saying your computer is infected and you must call a toll-free number. What should you do?', options: ['Call the number immediately', 'Click the "X" to close the pop-up', 'Restart your computer and notify IT', 'Follow the instructions on the screen'], answer: 2 },
-        { text: 'What is tailgating in a cybersecurity context?', options: ['Following a car too closely', 'An attacker following an authorized person into a secure building', 'Stealing someone\'s password by looking over their shoulder', 'Leaving your computer unlocked'], answer: 1 },
-        { text: 'You receive a frantic email from a friend saying they are stranded abroad and need you to wire them money. What should you do?', options: ['Wire the money immediately', 'Reply to the email to ask for more details', 'Call or text your friend on their known phone number to verify', 'Post about it on social media'], answer: 2 },
-        { text: 'Why is it important to lock your computer screen when you step away?', options: ['To save power', 'To prevent unauthorized access to your files and the company network', 'Because it looks professional', 'To stop the screen saver from running'], answer: 1 }
+        { text: 'A colleague asks for your password. What should you do?', options: ['Give it to them', 'Refuse and report it', 'Create a guest account'], answer: 1 },
+        { text: 'You find a USB drive in the parking lot. What do you do?', options: ['Plug it in', 'Throw it away', 'Turn it in to IT'], answer: 2 },
+        { text: 'The "CEO" asks you to buy gift cards urgently via email. Action?', options: ['Buy them', 'Verify via phone/person', 'Email back for info'], answer: 1 }
     ];
     $scope.currentQ = 0;
     $scope.showFeedback = false;
+    $scope.isComplete = false;
     $scope.score = 0;
     var quizTimeout = null;
 
     $scope.nextQuestion = function() {
         if (quizTimeout) $timeout.cancel(quizTimeout);
         $scope.showFeedback = false;
+        
         if ($scope.currentQ < $scope.questions.length - 1) {
             $scope.currentQ++;
         } else {
+            $scope.isComplete = true;
             AuthService.addScore($scope.score, 'quiz');
-            alert("Quiz Complete! You scored " + $scope.score + " points.");
-            $scope.currentQ = 0;
-            $scope.score = 0;
         }
     };
     
     $scope.selectOption = function(index) {
-        $scope.showFeedback = true;
         $scope.isCorrect = (index === $scope.questions[$scope.currentQ].answer);
-        $scope.feedbackMessage = $scope.isCorrect ? 'Correct! Optimal secure behavior.' : 'Incorrect. That choice introduces security risks.';
-        
-        if ($scope.isCorrect) $scope.score += 10;
-
+        $scope.feedbackMessage = $scope.isCorrect ? 'Correct!' : 'Incorrect.';
+        if ($scope.isCorrect) $scope.score += 20;
+        $scope.showFeedback = true;
         quizTimeout = $timeout($scope.nextQuestion, 3000);
+    };
+
+    $scope.goHome = function() {
+        $location.path('/dashboard');
     };
 }]);
 

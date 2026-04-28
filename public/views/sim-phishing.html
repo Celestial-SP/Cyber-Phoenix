@@ -6,7 +6,7 @@
         </div>
     </div>
 
-    <div class="row justify-content-center">
+    <div class="row justify-content-center" ng-if="!isComplete">
         <div class="col-lg-8">
             <div class="phishing-email shadow-lg position-relative">
                 <span class="badge bg-primary position-absolute top-0 end-0 m-3">Email {{ currentEmail + 1 }} of {{ emails.length }}</span>
@@ -27,6 +27,18 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Completion Screen -->
+    <div class="row justify-content-center" ng-if="isComplete">
+        <div class="col-lg-6 text-center">
+            <div class="surface-container-high p-5">
+                <i class="bi bi-patch-check-fill text-primary" style="font-size: 6rem;"></i>
+                <h1 class="font-display mt-4">Module Complete!</h1>
+                <p class="fs-5 text-on-surface-variant mb-5">You have successfully analyzed all threat vectors in this module. Your performance has been logged.</p>
+                <button class="btn btn-primary-cyber btn-lg w-100" ng-click="goHome()">Return to Dashboard</button>
             </div>
         </div>
     </div>

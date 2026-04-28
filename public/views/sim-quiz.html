@@ -6,7 +6,7 @@
         </div>
     </div>
 
-    <div class="row justify-content-center">
+    <div class="row justify-content-center" ng-if="!isComplete">
         <div class="col-lg-8">
             <div class="surface-container-high position-relative">
                 <span class="badge bg-primary position-absolute top-0 end-0 m-3">Question {{ currentQ + 1 }} of {{ questions.length }}</span>
@@ -19,6 +19,19 @@
                         <i class="bi bi-arrow-right-circle text-primary me-2"></i> {{ opt }}
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Completion Screen -->
+    <div class="row justify-content-center" ng-if="isComplete">
+        <div class="col-lg-6 text-center">
+            <div class="surface-container-high p-5">
+                <i class="bi bi-award-fill text-primary" style="font-size: 6rem;"></i>
+                <h1 class="font-display mt-4">Quiz Complete!</h1>
+                <p class="fs-4 fw-bold text-tertiary mb-2">Final Score: {{ score }} pts</p>
+                <p class="fs-5 text-on-surface-variant mb-5">Your tactical knowledge has been validated. You are now better prepared for real-world threats.</p>
+                <button class="btn btn-primary-cyber btn-lg w-100" ng-click="goHome()">Return to Dashboard</button>
             </div>
         </div>
     </div>
