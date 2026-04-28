@@ -37,6 +37,6 @@
         <i class="bi" ng-class="isCorrect ? 'bi-check-circle-fill text-success-cyber' : 'bi-x-circle-fill text-danger-cyber'" style="font-size: 5rem;"></i>
         <h3 class="font-display mt-3 mb-3">{{ isCorrect ? 'Threat Neutralized' : 'System Compromised' }}</h3>
         <p class="mb-4">{{ feedbackMessage }}</p>
-        <button class="btn btn-primary-cyber" ng-click="showFeedback = false">Continue</button>
+        <button class="btn btn-primary-cyber" ng-click="nextEmail()">Continue</button>
     </div>
 </div>

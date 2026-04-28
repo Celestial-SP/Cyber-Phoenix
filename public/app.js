@@ -177,8 +177,13 @@ app.service('AuthService', ['$q', '$rootScope', function($q, $rootScope) {
     // Helper to update score in firestore
     this.addScore = function(points, moduleName) {
         if (!currentUser) return;
+        
+        // Ensure completedModules object exists
+        if (!userData.completedModules) userData.completedModules = {};
+        userData.completedModules[moduleName] = true;
+
         var newScore = (userData.score || 0) + points;
-        var newLevel = Math.floor(newScore / 500) + 1; // 1 level per 500 points
+        var newLevel = Math.floor(newScore / 500) + 1;
         
         var updates = {
             score: newScore,
@@ -186,19 +191,15 @@ app.service('AuthService', ['$q', '$rootScope', function($q, $rootScope) {
         };
         updates[`completedModules.${moduleName}`] = true;
 
-        // Recalculate progress
-        var currentModules = userData.completedModules || {};
-        currentModules[moduleName] = true;
-        var completedCount = Object.keys(currentModules).length;
-        var totalModules = 3; // Hardcoded for now
+        // Recalculate progress based on actual module names
+        var completedCount = Object.keys(userData.completedModules).length;
+        var totalModules = 3; 
         updates.progress = Math.round((completedCount / totalModules) * 100);
 
         return db.collection('users').doc(currentUser.uid).update(updates).then(function() {
             userData.score = newScore;
             userData.level = newLevel;
             userData.progress = updates.progress;
-            if (!userData.completedModules) userData.completedModules = {};
-            userData.completedModules[moduleName] = true;
             $rootScope.$applyAsync();
         });
     };
@@ -206,7 +207,7 @@ app.service('AuthService', ['$q', '$rootScope', function($q, $rootScope) {
 
 app.controller('NavCtrl', ['$scope', 'AuthService', '$location', function($scope, AuthService, $location) {
     $scope.$watch(function() { return AuthService.isLoggedIn(); }, function(val) {
-        $scope.isLoggedIn = AuthService.isLoggedIn;
+        $scope.isLoggedIn = AuthService.isLoggedIn();
         $scope.role = AuthService.getRole();
         $scope.username = AuthService.getUsername();
     });
@@ -214,7 +215,7 @@ app.controller('NavCtrl', ['$scope', 'AuthService', '$location', function($scope
     $scope.logout = function() {
         AuthService.logout().then(function() {
             $location.path('/');
-            $scope.$apply();
+            $scope.$applyAsync();
         });
     };
 }]);
@@ -235,10 +236,10 @@ app.controller('AuthCtrl', ['$scope', 'AuthService', '$location', function($scop
         if ($scope.isSignUp) {
             AuthService.signup($scope.email, $scope.password, $scope.username).then(function(res) {
                 $location.path('/dashboard');
-                $scope.$apply();
+                $scope.$applyAsync();
             }).catch(function(err) {
                 $scope.error = err.message;
-                $scope.$apply();
+                $scope.$applyAsync();
             });
         } else {
             AuthService.login($scope.email, $scope.password).then(function(res) {
@@ -247,26 +248,34 @@ app.controller('AuthCtrl', ['$scope', 'AuthService', '$location', function($scop
                 } else {
                     $location.path('/dashboard');
                 }
-                $scope.$apply();
+                $scope.$applyAsync();
             }).catch(function(err) {
                 $scope.error = err.message;
-                $scope.$apply();
+                $scope.$applyAsync();
             });
         }
     };
 }]);
 
 app.controller('DashboardCtrl', ['$scope', 'AuthService', function($scope, AuthService) {
-    var uData = AuthService.getUserData() || {};
-    $scope.progress = uData.progress || 0;
-    $scope.level = uData.level || 1;
-    var completed = uData.completedModules || {};
+    var updateView = function() {
+        var uData = AuthService.getUserData() || {};
+        $scope.progress = uData.progress || 0;
+        $scope.level = uData.level || 1;
+        var completed = uData.completedModules || {};
 
-    $scope.modules = [
-        { title: 'Phishing Detection', path: '/sim-phishing', status: completed['phishing'] ? 'completed' : 'pending' },
-        { title: 'Password Security', path: '/sim-password', status: completed['password'] ? 'completed' : 'pending' },
-        { title: 'Social Engineering Quiz', path: '/sim-quiz', status: completed['quiz'] ? 'completed' : 'pending' }
-    ];
+        $scope.modules = [
+            { title: 'Phishing Detection', path: '/sim-phishing', status: completed['phishing'] ? 'completed' : 'pending' },
+            { title: 'Password Security', path: '/sim-password', status: completed['password'] ? 'completed' : 'pending' },
+            { title: 'Social Engineering Quiz', path: '/sim-quiz', status: completed['quiz'] ? 'completed' : 'pending' }
+        ];
+    };
+
+    // Initialize
+    updateView();
+
+    // Re-sync if data changes
+    $scope.$watch(function() { return AuthService.getUserData(); }, updateView, true);
 }]);
 
 app.controller('SimPhishingCtrl', ['$scope', '$timeout', 'AuthService', function($scope, $timeout, AuthService) {
@@ -403,6 +412,17 @@ app.controller('SimPhishingCtrl', ['$scope', '$timeout', 'AuthService', function
     $scope.showFeedback = false;
     $scope.isCorrect = false;
     $scope.feedbackMessage = '';
+    var feedbackTimeout = null;
+
+    $scope.nextEmail = function() {
+        if (feedbackTimeout) $timeout.cancel(feedbackTimeout);
+        $scope.showFeedback = false;
+        if ($scope.currentEmail < $scope.emails.length - 1) {
+            $scope.currentEmail++;
+        } else {
+            $scope.currentEmail = 0;
+        }
+    };
 
     $scope.checkLink = function(isPhishing) {
         if (isPhishing) {
@@ -415,14 +435,7 @@ app.controller('SimPhishingCtrl', ['$scope', '$timeout', 'AuthService', function
         }
         $scope.showFeedback = true;
         
-        $timeout(function() {
-            $scope.showFeedback = false;
-            if ($scope.currentEmail < $scope.emails.length - 1) {
-                $scope.currentEmail++;
-            } else {
-                $scope.currentEmail = 0;
-            }
-        }, 4000);
+        feedbackTimeout = $timeout($scope.nextEmail, 4000);
     };
 }]);
 
@@ -449,7 +462,6 @@ app.controller('SimPasswordCtrl', ['$scope', 'AuthService', '$timeout', function
             if (!$scope.completed && score >= 100) {
                 $scope.completed = true;
                 AuthService.addScore(100, 'password');
-                // Give a bit of visual feedback
                 $timeout(function() { alert("Password Mastered! 100 points awarded."); }, 500);
             }
         }
@@ -472,6 +484,20 @@ app.controller('SimQuizCtrl', ['$scope', '$timeout', 'AuthService', function($sc
     $scope.currentQ = 0;
     $scope.showFeedback = false;
     $scope.score = 0;
+    var quizTimeout = null;
+
+    $scope.nextQuestion = function() {
+        if (quizTimeout) $timeout.cancel(quizTimeout);
+        $scope.showFeedback = false;
+        if ($scope.currentQ < $scope.questions.length - 1) {
+            $scope.currentQ++;
+        } else {
+            AuthService.addScore($scope.score, 'quiz');
+            alert("Quiz Complete! You scored " + $scope.score + " points.");
+            $scope.currentQ = 0;
+            $scope.score = 0;
+        }
+    };
     
     $scope.selectOption = function(index) {
         $scope.showFeedback = true;
@@ -480,17 +506,7 @@ app.controller('SimQuizCtrl', ['$scope', '$timeout', 'AuthService', function($sc
         
         if ($scope.isCorrect) $scope.score += 10;
 
-        $timeout(function() {
-            $scope.showFeedback = false;
-            if ($scope.currentQ < $scope.questions.length - 1) {
-                $scope.currentQ++;
-            } else {
-                AuthService.addScore($scope.score, 'quiz');
-                alert("Quiz Complete! You scored " + $scope.score + " points.");
-                $scope.currentQ = 0; // restart quiz for now
-                $scope.score = 0;
-            }
-        }, 3000);
+        quizTimeout = $timeout($scope.nextQuestion, 3000);
     };
 }]);
 
