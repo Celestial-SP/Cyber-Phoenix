@@ -27,7 +27,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto" ng-if="isLoggedIn()">
+                <ul class="navbar-nav ms-auto" ng-if="isLoggedIn">
                     <li class="nav-item" ng-if="role === 'learner'">
                         <a class="nav-link" href="#!/dashboard">Dashboard</a>
                     </li>
@@ -41,7 +41,7 @@
                         <a class="nav-link" href="" ng-click="logout()">Logout ({{username}})</a>
                     </li>
                 </ul>
-                <ul class="navbar-nav ms-auto" ng-if="!isLoggedIn()">
+                <ul class="navbar-nav ms-auto" ng-if="!isLoggedIn">
                     <li class="nav-item">
                         <a class="nav-link" href="#!/">Login</a>
                     </li>
