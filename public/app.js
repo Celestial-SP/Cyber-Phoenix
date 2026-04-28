@@ -496,14 +496,27 @@ app.controller('SimQuizCtrl', ['$scope', '$timeout', 'AuthService', function($sc
 
 app.controller('RewardsCtrl', ['$scope', function($scope) {
     $scope.leaderboard = [];
+    $scope.loading = true;
+    $scope.error = null;
+
     db.collection('users').orderBy('score', 'desc').limit(10).get().then(function(snapshot) {
         var lb = [];
         var rank = 1;
         snapshot.forEach(function(doc) {
             var data = doc.data();
-            lb.push({ rank: rank++, name: data.username, score: data.score });
+            lb.push({ 
+                rank: rank++, 
+                name: data.username || data.name || 'Anonymous Agent', 
+                score: data.score || 0 
+            });
         });
         $scope.leaderboard = lb;
+        $scope.loading = false;
+        $scope.$applyAsync();
+    }).catch(function(err) {
+        console.error("Leaderboard Error:", err);
+        $scope.error = "Unable to retrieve roster. Check console for details.";
+        $scope.loading = false;
         $scope.$applyAsync();
     });
 }]);
