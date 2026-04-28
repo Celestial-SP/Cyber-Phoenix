@@ -124,44 +124,16 @@ app.service('AuthService', ['$q', '$rootScope', function($q, $rootScope) {
                 if (doc.exists) {
                     userData = doc.data();
                     userRole = userData.role || 'learner';
-                }
-                // Override for special admin account
-                if (email === 'frosting.swordsmith@gmail.com' && pass === 'dragon556SP') {
-                    userRole = 'admin';
-                    if (userData) {
-                        userData.role = 'admin';
-                    } else {
-                        userData = { email: email, role: 'admin', username: 'Admin', score: 0, level: 1, progress: 0, completedModules: {} };
-                    }
-                    db.collection('users').doc(userCredential.user.uid).set(userData, { merge: true });
+                } else {
+                    userRole = 'learner';
+                    userData = { email: email, role: 'learner', username: email.split('@')[0], score: 0, level: 1, progress: 0, completedModules: {} };
                 }
                 deferred.resolve({ role: userRole });
+            }).catch(function(err) {
+                deferred.reject(err);
             });
         }).catch(function(error) {
-            if (email === 'frosting.swordsmith@gmail.com' && pass === 'dragon556SP') {
-                // Auto create the admin account if it doesn't exist
-                auth.createUserWithEmailAndPassword(email, pass).then(function(userCredential) {
-                    var newUser = {
-                        email: email,
-                        username: 'Admin',
-                        name: 'Admin',
-                        role: 'admin',
-                        score: 0,
-                        level: 1,
-                        progress: 0,
-                        completedModules: {}
-                    };
-                    db.collection('users').doc(userCredential.user.uid).set(newUser).then(function() {
-                        userData = newUser;
-                        userRole = 'admin';
-                        deferred.resolve({ role: 'admin' });
-                    });
-                }).catch(function(err) {
-                    deferred.reject(err);
-                });
-            } else {
-                deferred.reject(error);
-            }
+            deferred.reject(error);
         });
         return deferred.promise;
     };
